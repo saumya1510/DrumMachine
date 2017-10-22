@@ -1,7 +1,8 @@
 	var audio_context = window.AudioContext || window.webkitAudioContext;
 	var con = new audio_context();
-	var osc = con.createOscillator();
-	osc.connect(con.destination)
+/*	var osc = con.createOscillator();
+	osc.frequency.value = 300;
+	osc.connect(con.destination)*/
 
 	var nx = Nexus;
 
@@ -25,6 +26,8 @@
 		'columns': seq[0].length
 	});
 
+	matrix.colorize('fill', 'grey');
+
 	var tempoDial = new Nexus.Add.Dial('#tempoDial', {
 		'min': 80,
 		'max': 800,
@@ -34,14 +37,33 @@
 
 	var tempoValue = new Nexus.Add.Number('#tempoValue');
 	tempoValue.link(tempoDial);
+	var pitchShifters = new Array(8);
+	var dl = document.getElementById('shiftersList');
+	for(var i = 0; i < 8; i++){
+		var dd = document.createElement('dd');
+		var div = document.createElement('div');
+		var id = 'pitchShifter' + i.toString();
+		div.id = id;
+		idForNexus = '#' + id;
+		dd.appendChild(div);
+		dl.appendChild(dd);
+		var shifter = new Nexus.Add.Slider(idForNexus, {
+			'size': [120, 25],
+			'min': 0, 
+			'max': 2,
+			'step': 0.1,
+			'value': 1
+		});
+		pitchShifters[i] = (shifter);
+	}
 
-	matrix.colorize('fill', 'grey');
+	console.log(pitchShifters);
 
 	var step = 0;
 	var interval = 0.125;
 
 	matrix.on('change', function(tile){
-		console.log(tile);
+		//console.log(tile);
 		seq[tile.row][tile.column] = tile.state;
 	})
 	var snare, closedHat, kick, openHat, lowTom, midTom, highTom, medCrash;
@@ -71,42 +93,46 @@
 	});
 
 	var player;
-	function playSound(buffer){
+	var playbackRate = new Array(8);
+	playbackRate.fill(1);
+	console.log(playbackRate);
+	function playSound(buffer, playbackRate){
 		player = con.createBufferSource();
 		player.buffer = buffer;
 		player.loop = false;
+		player.playbackRate.value = playbackRate;
 		player.connect(con.destination);
 		player.start();
 	}
-	playSound(closedHat, con.currentTime);
+	//playSound(closedHat, playbackRate);
 
 	var waitTime = 120;
 	var gotUpTo;
 	
 	function playBeats(step){
 			if (seq[0][step % seq[0].length]){
-				playSound(closedHat);
+				playSound(closedHat, playbackRate[0]);
 			}
 			if (seq[1][step % seq[1].length]){
-				playSound(openHat);
+				playSound(openHat, playbackRate[1]);
 			}
 			if (seq[2][step % seq[2].length]){
-				playSound(snare);
+				playSound(snare, playbackRate[2]);
 			}
 			if (seq[3][step % seq[3].length]){
-				playSound(kick);
+				playSound(kick, playbackRate[3]);
 			}
 			if (seq[4][step % seq[4].length]){
-				playSound(lowTom);
+				playSound(lowTom, playbackRate[4]);
 			}
 			if (seq[5][step % seq[5].length]){
-				playSound(midTom);
+				playSound(midTom, playbackRate[5]);
 			}
 			if (seq[6][step % seq[6].length]){
-				playSound(highTom);
+				playSound(highTom, playbackRate[6]);
 			}
 			if (seq[7][step % seq[7].length]){
-				playSound(medCrash);
+				playSound(medCrash, playbackRate[7]);
 			}
 	}
 
@@ -114,6 +140,39 @@
 	var interval = new Nexus.Interval(waitTime, function(){
 		playBeats(counter.next());
 	});
+
+
+	tempoDial.on('change', function(bpm){
+		bps = bpm/60;
+		waitTime = 1/bps * 1000;
+		interval.ms(waitTime);
+	});
+
+	pitchShifters[0].on('change', function(value){
+		playbackRate[0] = value;
+	})
+	pitchShifters[1].on('change', function(value){
+		playbackRate[1] = value;
+	})
+	pitchShifters[2].on('change', function(value){
+		playbackRate[2] = value;
+	})
+	pitchShifters[3].on('change', function(value){
+		playbackRate[3] = value;
+	})
+	pitchShifters[4].on('change', function(value){
+		playbackRate[4] = value;
+	})
+	pitchShifters[5].on('change', function(value){
+		playbackRate[5] = value;
+	})
+	pitchShifters[6].on('change', function(value){
+		playbackRate[6] = value;
+	})
+	pitchShifters[7].on('change', function(value){
+		playbackRate[7] = value;
+	})
+
 
 	interval.start();
 
@@ -124,18 +183,12 @@
 	    request.onload = function(){
 	        var audioData = request.response;
 	        con.decodeAudioData(audioData, function(buffer) {
-	            console.log(buffer);
+	            //console.log(buffer);
 	            callback(buffer);
 	        });
 	    };
 	    request.send();
 	};
-
-	tempoDial.on('change', function(bpm){
-		bps = bpm/60;
-		waitTime = 1/bps * 1000;
-		interval.ms(waitTime);
-	});
 
 		/*setInterval(function(){
 		var now = con.currentTime;
