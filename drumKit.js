@@ -66,30 +66,30 @@
 		//console.log(tile);
 		seq[tile.row][tile.column] = tile.state;
 	})
-	var snare, closedHat, kick, openHat, lowTom, midTom, highTom, medCrash;
+	var buffers = new Array(8);
 	loadSample('odx/001_DX_Snare_1.wav', function (buffer){
-    	snare = buffer; 
+    	buffers[0] = buffer; 
 	});
 	loadSample('odx/012_DX_Cl_Hat.wav', function (buffer){
-   		closedHat = buffer; 
+   		buffers[1] = buffer; 
 	});
 	loadSample('odx/000_Kick_1.wav', function(buffer){
-		kick = buffer;
+		buffers[2] = buffer;
 	});
 	loadSample('odx/005_DX_Open_Hat.wav', function(buffer){
-		openHat = buffer;
+		buffers[3] = buffer;
 	});
 	loadSample('odx/008_DX_Low_Tom.wav', function(buffer){
-		lowTom = buffer;
+		buffers[4] = buffer;
 	});
 	loadSample('odx/006_DX_Mid_Tom.wav', function(buffer){
-		midTom = buffer;
+		buffers[5] = buffer;
 	});
 	loadSample('odx/010_DX_Hi_Tom.wav', function(buffer){
-		highTom = buffer;
+		buffers[6] = buffer;
 	});
 	loadSample('odx/007_DX_Med_Crash.wav', function(buffer){
-		medCrash = buffer;
+		buffers[7] = buffer;
 	});
 
 	var player;
@@ -110,30 +110,11 @@
 	var gotUpTo;
 	
 	function playBeats(step){
-			if (seq[0][step % seq[0].length]){
-				playSound(closedHat, playbackRate[0]);
+		for(var i = 0; i < 8; i++){
+			if(seq[i][step % seq[i].length]){
+				playSound(buffers[i], playbackRate[i]);
 			}
-			if (seq[1][step % seq[1].length]){
-				playSound(openHat, playbackRate[1]);
-			}
-			if (seq[2][step % seq[2].length]){
-				playSound(snare, playbackRate[2]);
-			}
-			if (seq[3][step % seq[3].length]){
-				playSound(kick, playbackRate[3]);
-			}
-			if (seq[4][step % seq[4].length]){
-				playSound(lowTom, playbackRate[4]);
-			}
-			if (seq[5][step % seq[5].length]){
-				playSound(midTom, playbackRate[5]);
-			}
-			if (seq[6][step % seq[6].length]){
-				playSound(highTom, playbackRate[6]);
-			}
-			if (seq[7][step % seq[7].length]){
-				playSound(medCrash, playbackRate[7]);
-			}
+		}
 	}
 
 	var counter = new Nexus.Counter(0, 8);
