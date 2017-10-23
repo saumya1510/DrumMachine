@@ -18,37 +18,51 @@
 		</div>
 	</section>
 	<div class = "columns">
-		<div class = "column is-2"></div>
-		<div class = "column is-2 is-pulled-right has-text-right is-size-6">
-			<dl>
-				<dt>Closed Hi Hat</dt>
-				<dt>Open Hi Hat</dt>
-				<dt>Snare</dt>
-				<dt>Kick</dt>
-				<dt>Low Tom</dt>
-				<dt>Mid Tom</dt>
-				<dt>Hight Tom</dt>
-				<dt>Medium Crash</dt>
-			</dl>
+		<div class = "column is-8">
+				<h5 class = "title is-5 has-text-centered">Drum Kit</h3>
+				<div class = "columns">
+					<div class = "column is-2"></div>
+					<div class = "column is-2">
+						<dl class = "is-pulled-right has-text-right is-size-6">
+							<dt>Open Hi Hat</dt>
+							<dt>Closed Hi Hat</dt>
+							<dt>Snare</dt>
+							<dt>Kick</dt>
+							<dt>Low Tom</dt>
+							<dt>Mid Tom</dt>
+							<dt>Hight Tom</dt>
+							<dt>Medium Crash</dt>
+						</dl>
+					</div>
+					<div class = "column is-4 is-pulled-left">
+						<div id = "drums"></div>
+					</div>
+				</div>
 		</div>
-		<div class = "column is-4 is-pulled-left">
-			<div id = "drums"></div>
-		</div>
-		<div id = "controllers">
-			<div class = "column is-pulled-left">
+		<div class = "column is-2">
+			<h5 class = "title is-5 has-text-justified">Pitch</h5>
+			<div id = "controllers">
 				<div id = pitchShifters>
 					<dl id = 'shiftersList'></dl>
 				</div>
 			</div>
-			<div class = "column is-pulled-left">
-				<div class = "column">
-					<div id = "tempoDial"></div>
-				</div>
-				<div class = "column">
-					<div id = "tempoValue"></div>
-				</div>
+		</div>
+		<div class = "column is-2 is-pulled-left">
+			<h5 class = "title is-5 has-text-justified">Tempo</h5>
+			<div class = "column">
+				<div id = "tempoDial"></div>
+			</div>
+			<div class = "column">
+				<div id = "tempoValue"></div>
 			</div>
 		</div>
+	</div>
+	<div class = "columns">
+		<div class = "column is-5"></div>
+		<div class = "column is-2">
+			<div class = "button is-info" id = "stopBeats" onclick="stopBeats();">Stop</div>
+		</div>
+		<div class = "column is-5"></div>
 	</div>
 </body>
 

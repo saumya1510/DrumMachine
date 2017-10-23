@@ -9,7 +9,7 @@
 
 	//drum machine code
 
-	var seq = [
+	/*var seq = [
 	[0, 0, 0, 0, 0, 0, 0, 0], 
 	[0, 0, 0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0],
@@ -17,7 +17,14 @@
 	[0, 0, 0, 0, 0, 0, 0, 0], 
 	[0, 0, 0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0]];
+	[0, 0, 0, 0, 0, 0, 0, 0]];*/
+
+	var seq = new Array(8);
+	for (var i = 0; i < 8; i++){
+		seq[i] = new Array(8);
+		seq[i].fill(0);
+	}
+	//seq.fill(0);
 
 	//creating objects
 
@@ -26,7 +33,36 @@
 		'columns': seq[0].length
 	});
 
-	matrix.colorize('fill', 'grey');
+	matrix.colorize('fill', '#d3d3d3');
+	matrix.colorize('mediumLight', '#939393');
+
+	//console.log(matrix.rows);
+
+	var buffers = new Array(8);
+	loadSample('odx/005_DX_Open_Hat.wav', function(buffer){
+		buffers[0] = buffer;
+	});
+	loadSample('odx/012_DX_Cl_Hat.wav', function (buffer){
+   		buffers[1] = buffer; 
+	});
+	loadSample('odx/001_DX_Snare_1.wav', function (buffer){
+    	buffers[2] = buffer; 
+	});
+	loadSample('odx/000_Kick_1.wav', function(buffer){
+		buffers[3] = buffer;
+	});
+	loadSample('odx/008_DX_Low_Tom.wav', function(buffer){
+		buffers[4] = buffer;
+	});
+	loadSample('odx/006_DX_Mid_Tom.wav', function(buffer){
+		buffers[5] = buffer;
+	});
+	loadSample('odx/010_DX_Hi_Tom.wav', function(buffer){
+		buffers[6] = buffer;
+	});
+	loadSample('odx/007_DX_Med_Crash.wav', function(buffer){
+		buffers[7] = buffer;
+	});
 
 	var tempoDial = new Nexus.Add.Dial('#tempoDial', {
 		'min': 80,
@@ -57,45 +93,18 @@
 		pitchShifters[i] = (shifter);
 	}
 
-	console.log(pitchShifters);
+	//console.log(pitchShifters);
 
-	var step = 0;
-	var interval = 0.125;
 
 	matrix.on('change', function(tile){
-		//console.log(tile);
-		seq[tile.row][tile.column] = tile.state;
+			seq[tile.row][tile.column] = tile.state;
 	})
-	var buffers = new Array(8);
-	loadSample('odx/001_DX_Snare_1.wav', function (buffer){
-    	buffers[0] = buffer; 
-	});
-	loadSample('odx/012_DX_Cl_Hat.wav', function (buffer){
-   		buffers[1] = buffer; 
-	});
-	loadSample('odx/000_Kick_1.wav', function(buffer){
-		buffers[2] = buffer;
-	});
-	loadSample('odx/005_DX_Open_Hat.wav', function(buffer){
-		buffers[3] = buffer;
-	});
-	loadSample('odx/008_DX_Low_Tom.wav', function(buffer){
-		buffers[4] = buffer;
-	});
-	loadSample('odx/006_DX_Mid_Tom.wav', function(buffer){
-		buffers[5] = buffer;
-	});
-	loadSample('odx/010_DX_Hi_Tom.wav', function(buffer){
-		buffers[6] = buffer;
-	});
-	loadSample('odx/007_DX_Med_Crash.wav', function(buffer){
-		buffers[7] = buffer;
-	});
+
 
 	var player;
 	var playbackRate = new Array(8);
 	playbackRate.fill(1);
-	console.log(playbackRate);
+	//console.log(playbackRate);
 	function playSound(buffer, playbackRate){
 		player = con.createBufferSource();
 		player.buffer = buffer;
@@ -106,8 +115,7 @@
 	}
 	//playSound(closedHat, playbackRate);
 
-	var waitTime = 120;
-	var gotUpTo;
+	var waitTime = 500;
 	
 	function playBeats(step){
 		for(var i = 0; i < 8; i++){
@@ -118,15 +126,16 @@
 	}
 
 	var counter = new Nexus.Counter(0, 8);
-	var interval = new Nexus.Interval(waitTime, function(){
-		playBeats(counter.next());
-	});
+	/*var interval = new Nexus.Interval(waitTime, function(){
+		//playBeats(counter.next());
+		console.log(interval.rate);
+	});*/
 
 
 	tempoDial.on('change', function(bpm){
 		bps = bpm/60;
 		waitTime = 1/bps * 1000;
-		interval.ms(waitTime);
+		matrix.interval.ms(waitTime);
 	});
 
 	pitchShifters[0].on('change', function(value){
@@ -154,9 +163,19 @@
 		playbackRate[7] = value;
 	})
 
-
-	interval.start();
-
+	//console.log(interval);
+	//interval.start();
+	matrix.start(waitTime);
+	matrix.on('step', function(col){
+		reversedCol = col.reverse();
+		for(var i = 0; i < 8; i++){
+			if (reversedCol[i] == 1)
+				playSound(buffers[i], playbackRate[i]);
+		}
+	});
+	function stopBeats(){
+		matrix.stop();
+	}
 	function loadSample(url, callback){
 	    var request = new XMLHttpRequest();
 	    request.open('GET', url, true);
